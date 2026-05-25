@@ -1,30 +1,59 @@
-print("base code")
+from game.entity.player.EntityPlayer import EntityPlayer as player
 
-def main_loop():
-    print("main code")
+class Game():
+    def __init__(self):
+        self.name = "My Game"
+        self.version = "0.01.01"
+        self.active = True
+        self.running = False
+        self.currentScreen = None
 
-    def entity(name, life) -> dict:
-        return {
-            "name": name, 
-            "life": life
-        }
+    def run(self):
+        self.running = True
+        print(f"{self.name}, v{self.version}")
+        self.main_loop()
+
+    def is_Active(self):
+        return self.active
     
-    player = entity("player", 100)
+    def is_running(self):
+        return self.running
 
-    while player["life"] > 0:
-        print(f"{player['name']} has {player['life']} life left.")
-        damage = int(input(f"Enter damage taken: >\n"))
-        player["life"] -= damage
+    def displayGuiScreen(self, screen):
+        if not self.is_Active():
+            print("Game is not active. Cannot display GUI screen.")
+            return
+        else:
+            self.currentScreen = screen
+            print(f"Displaying GUI screen: {screen}\n")
 
-        if  player["life"] <= 0:
-            print(f"{player['name']} has died.")
-            break
+    def main_loop(self):
+        if not self.is_running() and not self.is_Active():
+            print("Game is not active. Cannot start.")
+            return
+        
+        main_player = player("Player1")        
+        while self.running and self.is_Active():
+## ===================================================================
 
-    print("Game Over")
-    restart = input("Do you want to restart? (y/n) >\n")
-    if restart.lower() == "y":
-        main_loop()
-    else:
-        print("Thanks for playing!")
+            self.displayGuiScreen("Main Menu")
+            print(f"{main_player.name}, Tu vida actual es {main_player.getLife()}/{main_player.getMaxLife()}")
+
+            useresponse = input("check:> ")
+            if useresponse == "false":
+                self.active = False
+                print("Game is now inactive.")
+
+            if useresponse == "1":
+                main_player.atributes()
+
+            if useresponse == "2":
+                self.displayGuiScreen("Inventory")
+
+            if useresponse == "3":
+                self.displayGuiScreen("Crafting")
+## ===================================================================
+
 if __name__ == "__main__":
-    main_loop()
+    game = Game()
+    game.run()
