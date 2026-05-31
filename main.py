@@ -1,4 +1,5 @@
 from client.gui.screens.GuiMainMenu import GuiMainMenu
+from client.gui.screens.GuiPauseMenu import GuiPauseMenu
 
 from pyglet import gl
 from pyglet import app, window
@@ -22,6 +23,8 @@ class Game():
         self.window = window.Window(width=self.width, height=self.height, caption=self.name)
         self.window.push_handlers(self)
 
+        self.window.has_exit = False
+
     def is_Active(self):
         return self.active
     
@@ -41,11 +44,13 @@ class Game():
         self.currentScreen.draw()
         
     def on_key_press(self, symbol, modifiers):
+        if symbol == key.ESCAPE:
+            print("ESC presionado")
+            self.displayGuiScreen(GuiPauseMenu(self))
+            return True
+
         if self.currentScreen:
             self.currentScreen.on_key_press(symbol, modifiers)
-
-        if symbol == key.ESCAPE:
-            self.window.close()
 
     def on_mouse_press(self, x, y, button, modifiers):
         if self.currentScreen:
@@ -54,8 +59,12 @@ class Game():
     def run(self):
         self.running = True
         print(f"{self.name}, v{self.version}")
-        self.displayGuiScreen(GuiMainMenu())
+        self.displayGuiScreen(GuiMainMenu(self))
         app.run()
+
+    def close_game(self):
+        self.running = False
+        self.window.close()
 
 if __name__ == "__main__":
     game = Game(800, 600)

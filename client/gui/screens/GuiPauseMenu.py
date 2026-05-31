@@ -1,20 +1,23 @@
 from client.gui.GuiScreen import GuiScreen
 from client.gui.GuiButton import GuiButton
 
+from client.gui.screens.GuiOptions import GuiOptions
 from client.gui.screens.GuiInGame import GuiInGame
+from client.gui.screens.GuiMainMenu import GuiMainMenu
 
-class GuiOptions(GuiScreen):
-    GUI_NAME = "OPTIONS"
+
+class GuiPauseMenu(GuiScreen):
+    GUI_NAME = "PAUSE"
 
     def __init__(self, game):
         super().__init__(game)
-        self.backgroundColor = (0.0, 0.0, 1.0, 1.0)
+        self.backgroundColor = (0.0, 0.0, 0.0, 0.1)
         self.setTitle(self.GUI_NAME)
 
         buttonWidth = 400
         buttonHeight = 60
         spacing = 50
-        buttonCount = 1
+        buttonCount = 3
 
         totalHeight = (buttonHeight*buttonCount)+(spacing*(buttonCount-1))
         startY = (game.height + totalHeight)/2 - buttonHeight
@@ -35,4 +38,13 @@ class GuiOptions(GuiScreen):
 
     def buttonClicked(self, buttonId):
         if buttonId == 0:
-            print("Back")
+            print("Resume")
+            self.game.displayGuiScreen(GuiInGame(self.game))
+
+        elif buttonId == 1:
+            print("Options")
+            self.game.displayGuiScreen(GuiOptions(self.game))
+
+        elif buttonId == 2:
+            print("Return to Main Menu")
+            self.game.displayGuiScreen(GuiMainMenu(self.game))
