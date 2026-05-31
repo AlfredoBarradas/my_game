@@ -1,17 +1,26 @@
-from game.entity.player.EntityPlayer import EntityPlayer as player
+from client.gui.screens.GuiMainMenu import GuiMainMenu
+
+from pyglet import gl
+from pyglet import app, window
+from pyglet.window import key
 
 class Game():
-    def __init__(self):
-        self.name = "My Game"
+    GAME_NAME = "My Game"
+    def __init__(self, width, height):
+        self.name = self.GAME_NAME
         self.version = "0.01.01"
+
+        self.width = width
+        self.height = height
+
         self.active = True
         self.running = False
+        self.loaded = False
+
         self.currentScreen = None
 
-    def run(self):
-        self.running = True
-        print(f"{self.name}, v{self.version}")
-        self.main_loop()
+        self.window = window.Window(width=self.width, height=self.height, caption=self.name)
+        self.window.push_handlers(self)
 
     def is_Active(self):
         return self.active
@@ -21,39 +30,34 @@ class Game():
 
     def displayGuiScreen(self, screen):
         if not self.is_Active():
-            print("Game is not active. Cannot display GUI screen.")
             return
-        else:
-            self.currentScreen = screen
-            print(f"Displaying GUI screen: {screen}\n")
+        self.currentScreen = screen
 
-    def main_loop(self):
-        if not self.is_running() and not self.is_Active():
-            print("Game is not active. Cannot start.")
+    def on_draw(self):
+        if self.currentScreen is None:
             return
+        gl.glClearColor(*self.currentScreen.backgroundColor)
+        self.window.clear()
+        self.currentScreen.draw()
         
-        main_player = player("Player1")        
-        while self.running and self.is_Active():
-## ===================================================================
+    def on_key_press(self, symbol, modifiers):
+        if self.currentScreen:
+            self.currentScreen.on_key_press(symbol, modifiers)
 
-            self.displayGuiScreen("Main Menu")
-            print(f"{main_player.name}, Tu vida actual es {main_player.getLife()}/{main_player.getMaxLife()}")
+        if symbol == key.ESCAPE:
+            self.window.close()
 
-            useresponse = input("check:> ")
-            if useresponse == "false":
-                self.active = False
-                print("Game is now inactive.")
+    def on_mouse_press(self, x, y, button, modifiers):
+        if self.currentScreen:
+            self.currentScreen.on_mouse_press(x, y, button, modifiers)
+    
+    def run(self):
+        self.running = True
+        print(f"{self.name}, v{self.version}")
+        self.displayGuiScreen(GuiMainMenu())
+        app.run()
 
-            if useresponse == "1":
-                main_player.atributes()
-
-            if useresponse == "2":
-                self.displayGuiScreen("Inventory")
-
-            if useresponse == "3":
-                self.displayGuiScreen("Crafting")
-## ===================================================================
 
 if __name__ == "__main__":
-    game = Game()
+    game = Game(800, 600)
     game.run()
